@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { X, Star } from "lucide-react";
 import { Review, Trainer, Member } from "@/types";
 import { storageService } from "@/lib/storage";
@@ -38,8 +39,6 @@ export default function ReviewModal({
     }
   }, [isOpen, trainers, members]);
 
-  if (!isOpen) return null;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -67,13 +66,28 @@ export default function ReviewModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">평가 작성</h2>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div
+            className="card-dark rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/10"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+        <div className="flex justify-between items-center p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">평가 작성</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-white transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -81,7 +95,7 @@ export default function ReviewModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               회원 *
             </label>
             <select
@@ -90,10 +104,10 @@ export default function ReviewModal({
               onChange={(e) =>
                 setFormData({ ...formData, memberId: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white"
             >
               {members.map((member) => (
-                <option key={member.id} value={member.id}>
+                <option key={member.id} value={member.id} className="bg-dark-900">
                   {member.name}
                 </option>
               ))}
@@ -101,7 +115,7 @@ export default function ReviewModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               트레이너 *
             </label>
             <select
@@ -110,10 +124,10 @@ export default function ReviewModal({
               onChange={(e) =>
                 setFormData({ ...formData, trainerId: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white"
             >
               {trainers.map((trainer) => (
-                <option key={trainer.id} value={trainer.id}>
+                <option key={trainer.id} value={trainer.id} className="bg-dark-900">
                   {trainer.name} ({trainer.specialty})
                 </option>
               ))}
@@ -121,7 +135,7 @@ export default function ReviewModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               평점 *
             </label>
             <div className="flex items-center space-x-2">
@@ -130,25 +144,25 @@ export default function ReviewModal({
                   key={star}
                   type="button"
                   onClick={() => setFormData({ ...formData, rating: star })}
-                  className="focus:outline-none"
+                  className="focus:outline-none hover:scale-110 transition-transform"
                 >
                   <Star
                     className={`h-8 w-8 transition-colors ${
                       star <= formData.rating
                         ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300"
+                        : "text-gray-600"
                     }`}
                   />
                 </button>
               ))}
-              <span className="ml-2 text-sm font-medium text-gray-700">
+              <span className="ml-2 text-sm font-medium text-white">
                 {formData.rating}점
               </span>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               평가 내용 *
             </label>
             <textarea
@@ -159,7 +173,7 @@ export default function ReviewModal({
                 setFormData({ ...formData, comment: e.target.value })
               }
               placeholder="트레이너에 대한 평가를 작성해주세요..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none text-white placeholder-gray-500"
             />
           </div>
 
@@ -167,19 +181,21 @@ export default function ReviewModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+              className="px-6 py-2 border border-white/10 rounded-lg text-gray-300 font-medium hover:bg-white/5 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700"
+              className="px-6 py-2 bg-gradient-to-br from-[#4448ff] to-[#3535e6] text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200 shadow-lg"
             >
               작성 완료
             </button>
           </div>
         </form>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

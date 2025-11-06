@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Member, Trainer } from "@/types";
 import { storageService } from "@/lib/storage";
@@ -51,8 +52,6 @@ export default function MemberModal({
     }
   }, [member, trainers]);
 
-  if (!isOpen) return null;
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -75,15 +74,30 @@ export default function MemberModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        >
+          <motion.div
+            className="card-dark rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/10"
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+          >
+        <div className="flex justify-between items-center p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">
             {member ? "회원 정보 수정" : "새 회원 추가"}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-white transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -91,7 +105,7 @@ export default function MemberModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               이름 *
             </label>
             <input
@@ -99,12 +113,12 @@ export default function MemberModal({
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               전화번호 *
             </label>
             <input
@@ -112,12 +126,12 @@ export default function MemberModal({
               required
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               이메일 *
             </label>
             <input
@@ -125,22 +139,22 @@ export default function MemberModal({
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               담당 트레이너 *
             </label>
             <select
               required
               value={formData.trainerId}
               onChange={(e) => setFormData({ ...formData, trainerId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white"
             >
               {trainers.map((trainer) => (
-                <option key={trainer.id} value={trainer.id}>
+                <option key={trainer.id} value={trainer.id} className="bg-dark-900">
                   {trainer.name} ({trainer.specialty})
                 </option>
               ))}
@@ -148,7 +162,7 @@ export default function MemberModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               멤버십 유형 *
             </label>
             <select
@@ -159,16 +173,16 @@ export default function MemberModal({
                   membershipType: e.target.value as "monthly" | "quarterly" | "yearly",
                 })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white"
             >
-              <option value="monthly">월간</option>
-              <option value="quarterly">분기</option>
-              <option value="yearly">연간</option>
+              <option value="monthly" className="bg-dark-900">월간</option>
+              <option value="quarterly" className="bg-dark-900">분기</option>
+              <option value="yearly" className="bg-dark-900">연간</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               상태 *
             </label>
             <select
@@ -179,11 +193,11 @@ export default function MemberModal({
                   status: e.target.value as "active" | "inactive" | "suspended",
                 })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white"
             >
-              <option value="active">활성</option>
-              <option value="inactive">비활성</option>
-              <option value="suspended">정지</option>
+              <option value="active" className="bg-dark-900">활성</option>
+              <option value="inactive" className="bg-dark-900">비활성</option>
+              <option value="suspended" className="bg-dark-900">정지</option>
             </select>
           </div>
 
@@ -191,19 +205,21 @@ export default function MemberModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+              className="px-6 py-2 border border-white/10 rounded-lg text-gray-300 font-medium hover:bg-white/5 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700"
+              className="px-6 py-2 bg-gradient-to-br from-[#4448ff] to-[#3535e6] text-white rounded-lg font-medium hover:opacity-90 transition-all duration-200 shadow-lg"
             >
               {member ? "수정" : "추가"}
             </button>
           </div>
         </form>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
