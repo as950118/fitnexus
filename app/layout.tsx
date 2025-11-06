@@ -13,6 +13,39 @@ const notoSansKR = Noto_Sans_KR({
 export const metadata: Metadata = {
   title: "FitNexus - 헬스장 PT 회원 관리 시스템",
   description: "헬스장 PT 회원 관리 및 트레이너 평가 시스템",
+  keywords: ["헬스장", "PT", "회원관리", "트레이너", "평가", "피트니스"],
+  authors: [{ name: "FitNexus" }],
+  openGraph: {
+    title: "FitNexus - 헬스장 PT 회원 관리 시스템",
+    description: "헬스장 PT 회원 관리 및 트레이너 평가 시스템",
+    url: "https://fitnexus.vercel.app",
+    siteName: "FitNexus",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "FitNexus - 헬스장 PT 회원 관리 시스템",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FitNexus - 헬스장 PT 회원 관리 시스템",
+    description: "헬스장 PT 회원 관리 및 트레이너 평가 시스템",
+    images: ["/opengraph-image"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
 };
 
 export default function RootLayout({
